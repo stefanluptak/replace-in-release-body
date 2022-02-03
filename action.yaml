@@ -1,0 +1,43 @@
+name: "Replace specified text or pattern in the GitHub release body"
+description: "Useful replacing Jira issue names with actual links to them"
+author: Štefan Ľupták
+branding:
+  icon: monitor
+  color: green
+inputs:
+  pattern:
+    description: "What to replace (can be a regex)"
+    required: true
+  replacement:
+    description: "Replace with this string"
+    required: true
+  release_tag_name:
+    description: "tag_name of the Release to update"
+    required: false
+  github_token:
+    description: "GitHub token"
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        echo "Starting"
+        echo "Release tag_name is $RELEASE_TAG_NAME"
+        echo "PATTERN=$PATTERN"
+        echo "REPLACEMENT=$REPLACEMENT"
+        echo "Retrieving body of a Release"
+        body="$(hub release show --format '%t%n%n%b' $RELEASE_TAG_NAME)"
+        echo -E "Original body: $body"
+        body="$(echo -E "$body" | sed -E "s/$PATTERN/$REPLACEMENT/g")"
+        echo "Updated body: $body"
+        echo "Updating it on the GitHub"
+        hub release edit --message "$body" $RELEASE_TAG_NAME
+        echo "Updated successfully"
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        PATTERN: ${{ inputs.pattern }}
+        REPLACEMENT: ${{ inputs.replacement }}
+        RELEASE_TAG_NAME: ${{ inputs.release_tag_name }}
