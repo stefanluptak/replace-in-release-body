@@ -22,8 +22,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: stefanluptak/replace-in-release-body@v1
         with:
-          pattern: "\[(WTF-[0-9]+)\]"
-          replacement: "\[\1\]\(https:\/\/your.atlassian.net\/browse\/\1\)"
+          pattern: "\\[(XYZ-[0-9]+)\\]"
+          replacement: "\\[\\1\\]\(https:\\/\\/your.atlassian.net\\/browse\\/\\1\)"
 ```
 
 ## Notes
